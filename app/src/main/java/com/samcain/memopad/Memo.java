@@ -8,6 +8,9 @@ public class Memo {
         this.id = id;
         this.memo = memo;
     }
+    public Memo(String memo) {
+        this.memo = memo;
+    }
 
     // Getters
     public int getId() {
