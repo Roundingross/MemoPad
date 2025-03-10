@@ -5,30 +5,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.samcain.memopad.databinding.ActivityMainBinding;
-
 import java.util.List;
 
+/**
+ * Adapter for the recycler view.
+ * Displays memos in a list.
+ */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private ActivityMainBinding binding;
     private List<Memo> data;
-    public RecyclerViewAdapter(List<Memo> data) {
+    private final MainActivity activity;
+
+    /**
+     * Constructs a new instance of the adapter.
+     * @param data - list of memos
+     */
+    public RecyclerViewAdapter(MainActivity activity, List<Memo> data) {
+        this.activity = activity;
         this.data = data;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        binding = ActivityMainBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        ViewHolder holder = new ViewHolder(binding.getRoot());
-        return holder;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.memo_item, parent, false);
+        view.setOnClickListener(activity.getItemClick());
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.setMemo(data.get(position));
-        holder.bindData();
+        holder.bindData(data.get(position));
     }
 
     @Override
@@ -36,29 +44,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return data.size();
     }
 
+    public Memo getItem(int position) {
+        return data.get(position);
+    }
 
+    public void updateData(List<Memo> newData) {
+        this.data = newData;
+        notifyDataSetChanged();
+    }
+
+
+    /**
+     * ViewHolder for the recycler view.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private Memo memo;
-        private TextView memoLabel;
-
+        private final TextView memoLabel;
         public ViewHolder(View itemView) {
             super(itemView);
+            memoLabel = itemView.findViewById(R.id.memoLabel);
         }
-        public Memo getMemo() {
-            return memo;
-        }
-        public void setMemo(Memo memo) {
-            this.memo = memo;
-        }
-
-        public void bindData() {
-            if (memoLabel == null) {
-                /*
-                TODO
-                memoLabel = (TextView) itemView.findViewById(R.id.memoLabel);
-                 */
-            }
-            memoLabel.setText(memo.getMemo());
+        public void bindData(Memo memo) {
+            memoLabel.setText("ID: " + memo.getId() + " - " + memo.getMemo());
         }
     }
 }
